@@ -1,0 +1,15 @@
+.env
+*.db
+*.log
+backend/main
+backend/*.exe
+node_modules/
+dist/
+cookies.*
+cookie.*
+cookies.txt
+
+*.zip
+*.tar.gz
+*.sql
+*.json
