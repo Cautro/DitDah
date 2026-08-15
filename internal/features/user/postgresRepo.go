@@ -16,6 +16,67 @@ func New(db *sql.DB) UserRepository {
 	}
 }
 
+func (r *postgresRepo) GetAllUsers(ctx context.Context) ([]*UserEntity, error) {
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+
+	const query = `SELECT
+			id,
+			username,
+			xp,
+			need_xp,
+			level,
+			lessons_done_en,
+			lessons_done_ru,
+			elo,
+			duels_win,
+			duel_max_score,
+			coins,
+			day_streak,
+			answer_streak,
+			last_login,
+			invited_by,
+			referral_code,
+			registered_date
+		FROM users;`
+
+	rows, err := r.db.QueryContext(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var users []*UserEntity
+	for rows.Next() {
+		u := &UserEntity{}
+		err := rows.Scan(
+			&u.Id,
+			&u.Username,
+			&u.XP,
+			&u.NeedXP,
+			&u.Level,
+			&u.LessonsDoneEn,
+			&u.LessonsDoneRu,
+			&u.Elo,
+			&u.DuelsWin,
+			&u.DuelMaxScore,
+			&u.Coins,
+			&u.DayStreak,
+			&u.AnswerStreak,
+			&u.LastLogin,
+			&u.InvitedBy,
+			&u.ReferralCode,
+			&u.RegisteredDate,
+		)
+		if err != nil {
+			return nil, err
+		}
+		users = append(users, u)
+	}
+
+	return users, nil
+}
+
 func (r *postgresRepo) GetFullUserById(ctx context.Context, userID int) (*UserEntity, error) {
     user, err := r.getUserById(ctx, userID)
     if err != nil {
@@ -132,6 +193,7 @@ func (r *postgresRepo) getUserByLogin(ctx context.Context, username string) (*Us
 	const query = `SELECT
 			id,
 			username,
+			password,
 			xp,
 			need_xp,
 			level,
@@ -155,6 +217,7 @@ func (r *postgresRepo) getUserByLogin(ctx context.Context, username string) (*Us
 	err := r.db.QueryRowContext(ctx, query, username).Scan(
 		&u.Id,
 		&u.Username,
+		&u.Password,
 		&u.XP,
 		&u.NeedXP,
 		&u.Level,

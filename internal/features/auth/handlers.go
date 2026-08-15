@@ -44,6 +44,8 @@ func LoginHandler(authUseCase *AuthUseCase) gin.HandlerFunc {
 		setRefreshTokenCookie(c, result.RefreshToken)
 
 		updateNetscapeCookiesFile(result.Token, result.RefreshToken)
+
+		c.JSON(200, gin.H{"status":"ok"})
 	}
 }
 

@@ -17,7 +17,7 @@ func Load() (Config, error) {
 	}
 	dbPath := os.Getenv("DB_PATH")
 	if dbPath == "" {
-		dbPath = "postgres://ditdah:sydr@151.242.88.125:5432/ditdahDB?sslmode=disable"
+		panic("db path don't exist")
 	}
 	jwtSecret := os.Getenv("JWT_SECRET")
 	if jwtSecret == "" {

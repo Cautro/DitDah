@@ -7,6 +7,7 @@ import (
 
 type UserRepository interface {
 	// work with users
+	GetAllUsers(ctx context.Context) ([]*UserEntity, error)
 	GetFullUserById(ctx context.Context, userID int) (*UserEntity, error)
 	GetUserByLogin(ctx context.Context, login string) (*UserEntity, error)
 

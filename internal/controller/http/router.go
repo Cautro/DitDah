@@ -33,6 +33,9 @@ func registerPublicRoutes(u UseCases, r *gin.Engine) {
 	r.POST("/login", auth.LoginHandler(u.Auth))
 	r.POST("/refresh", auth.RefreshHandler(u.Auth))
 	r.POST("/register", auth.RegisterHandler(u.Auth))
+
+	// tests
+	r.GET("/users", user.GetAllUsersHandler(u.User))
 }
 
 func registerAuthenticatedRoutes(u UseCases, r *gin.Engine) {
@@ -43,6 +46,6 @@ func registerAuthenticatedRoutes(u UseCases, r *gin.Engine) {
 
 func registerUserRoutes(u UseCases, api *gin.RouterGroup) {
 	api.GET("/me", user.GetMeHandler(u.User))
-	api.GET("/user/:id", user.GetUserById(u.User))
+	api.GET("/user", user.GetUserById(u.User)) // query param: ?Id=1
 	api.POST("/logout", auth.LogoutHandler(u.User, u.Auth))
 }

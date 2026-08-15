@@ -19,3 +19,7 @@ func (u *UserUseCase) GetMeUseCase(ctx context.Context, userId int) (*UserEntity
 func (u *UserUseCase) GetUserById(ctx context.Context, userId int) (*UserEntity, error) {
 	return u.userRepo.GetFullUserById(ctx, userId)
 }
+
+func (u *UserUseCase) GetAllUsersUseCase(ctx context.Context) ([]*UserEntity, error) {
+	return u.userRepo.GetAllUsers(ctx)
+}

@@ -1,6 +1,10 @@
 package jwt
 
-import "golang.org/x/crypto/bcrypt"
+import (
+	"log/slog"
+
+	"golang.org/x/crypto/bcrypt"
+)
 
 func HashPassword(password string) (string, error) {
 	hashedBytes, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
@@ -13,5 +17,13 @@ func HashPassword(password string) (string, error) {
 
 func CheckPasswordHash(password, hash string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
-	return err == nil
+	if err != nil {
+		slog.Error("BCRYPT MATCH FAILED", 
+			"error", err, 
+			"hash_received", hash, 
+			"password_len", len(password),
+		)
+		return false
+	}
+	return true
 }

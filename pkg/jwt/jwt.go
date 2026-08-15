@@ -23,6 +23,7 @@ type Claims struct {
 func NewTokenManager(secretKey string) *TokenManager {
 	return &TokenManager{
 		secretKey: []byte(secretKey),
+		ttl:       15 * time.Minute,
 	}
 }
 

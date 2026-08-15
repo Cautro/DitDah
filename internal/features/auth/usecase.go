@@ -4,6 +4,7 @@ import (
 	"ditdah/internal/features/user"
 	jwtToken "ditdah/pkg/jwt"
 	password "ditdah/pkg/jwt/crypto"
+	"log/slog"
 
 	// "crypto/rand"
 	// "strings"
@@ -37,7 +38,9 @@ func (s *AuthUseCase) RegisterUseCase(ctx context.Context, in user.UserRegisterD
 	defer cancel()
 	
 	passwordHash, err := password.HashPassword(in.Password)
+	slog.Info(passwordHash)
 	if err != nil {
+		slog.Error("Error hashing password", err)
 		return err
 	}
 
@@ -47,7 +50,7 @@ func (s *AuthUseCase) RegisterUseCase(ctx context.Context, in user.UserRegisterD
 func (s *AuthUseCase) Login(ctx context.Context, in LoginInput) (LoginResult, error) {
 	in.Username = strings.TrimSpace(in.Username)
 	if in.Username == "" || in.Password == "" {
-		return LoginResult{}, nil
+		return LoginResult{}, errors.New("Invalid login or password")
 	}
 
 	jwtMng := jwtToken.NewTokenManager(s.jwtSecret)
@@ -62,11 +65,11 @@ func (s *AuthUseCase) Login(ctx context.Context, in LoginInput) (LoginResult, er
 	}
 
 	if user == nil {
-		return LoginResult{}, nil
+		return LoginResult{}, errors.New("User is not exists")
 	}
 
 	if !password.CheckPasswordHash(in.Password, user.Password) {
-		return LoginResult{}, nil
+		return LoginResult{}, errors.New("Invalid password")
 	}
 
 	accessToken, err := jwtMng.GenerateAccessToken(user.Id, in.Username)
