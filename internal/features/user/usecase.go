@@ -23,3 +23,7 @@ func (u *UserUseCase) GetUserById(ctx context.Context, userId int) (*UserEntity,
 func (u *UserUseCase) GetAllUsersUseCase(ctx context.Context) ([]*UserEntity, error) {
 	return u.userRepo.GetAllUsers(ctx)
 }
+
+func (u *UserUseCase) DeleteUserUseCase(ctx context.Context, userId int) error {
+	return u.userRepo.DeleteUser(ctx, userId)
+}

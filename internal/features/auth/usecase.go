@@ -40,7 +40,6 @@ func (s *AuthUseCase) RegisterUseCase(ctx context.Context, in user.UserRegisterD
 	passwordHash, err := password.HashPassword(in.Password)
 	slog.Info(passwordHash)
 	if err != nil {
-		slog.Error("Error hashing password", err)
 		return err
 	}
 

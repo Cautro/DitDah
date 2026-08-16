@@ -2,6 +2,7 @@ package user
 
 import (
 	"context"
+	"crypto/rand"
 	"database/sql"
 	"time"
 )
@@ -14,6 +15,21 @@ func New(db *sql.DB) UserRepository {
 	return &postgresRepo{
 		db: db,
 	}
+}
+
+func (r *postgresRepo) DeleteUser(ctx context.Context, userId int) error {
+	dbctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+
+	_, err := r.db.ExecContext(dbctx, `
+		DELETE FROM users
+		WHERE id = $1
+	`, userId)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (r *postgresRepo) GetAllUsers(ctx context.Context) ([]*UserEntity, error) {
@@ -115,17 +131,19 @@ func (r *postgresRepo) GetUserByLogin(ctx context.Context, username string) (*Us
 }
 
 func (r *postgresRepo) Register(ctx context.Context, username, passwordHash string) error {
-	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	dbCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 	
 	const query = `
-		INSERT INTO users (username, password)
-		VALUES ($1, $2)`
+		INSERT INTO users (username, password, referral_code)
+		VALUES ($1, $2, $3)
+	`
 	
-	_, err := r.db.ExecContext(ctx, query, username, passwordHash)
+	referralCode := r.generateReferralCode()
+
+	_, err := r.db.ExecContext(dbCtx, query, username, passwordHash, referralCode)
 	return err
 }
-
 
 func (r *postgresRepo) SaveRefreshToken(ctx context.Context, userID int, token string, expiresAt time.Time) error {
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
@@ -185,6 +203,25 @@ func (r *postgresRepo) DeleteRefreshToken(ctx context.Context, token string) err
 
 	return nil
 }
+
+func (r *postgresRepo) generateReferralCode() string {
+	const charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	const codeLength = 8
+
+	randomBytes := make([]byte, codeLength)
+	_, err := rand.Read(randomBytes)
+	if err != nil {
+		return ""
+	}
+
+	code := make([]byte, codeLength)
+	for i := 0; i < codeLength; i++ {
+		code[i] = charset[randomBytes[i]%byte(len(charset))]
+	}
+
+	return string(code)
+}
+
 
 func (r *postgresRepo) getUserByLogin(ctx context.Context, username string) (*UserEntity, error) {
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)

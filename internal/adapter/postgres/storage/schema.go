@@ -29,6 +29,14 @@ func (s *Storage) initSchema() error {
         return err
     }
 
+	if err := s.initLesson(); err != nil {
+		return err
+	}
+
+	if err := s.initTask(); err != nil {
+		return err
+	}
+
 	if err := s.initHTTPOnlyStorage(); err != nil {
 		return err
 	}
@@ -42,6 +50,8 @@ func (s *Storage) initUser() error {
 
 		username VARCHAR(255) NOT NULL UNIQUE,
 		password VARCHAR(255),
+
+		is_admin BOOLEAN NOT NULL DEFAULT FALSE,
 
 		xp INT NOT NULL DEFAULT 0,
 		need_xp INT NOT NULL DEFAULT 0,
@@ -189,11 +199,31 @@ func (s *Storage) initItem() error {
 	return err
 }
 
-// func (s *Storage) initLesson() error {
-// 	query := `CREATE TABLE lessons(
-// 	)`
-// }
+func (s *Storage) initLesson() error {
+	const query = `CREATE TABLE IF NOT EXISTS lessons (
+		id SERIAL PRIMARY KEY,
+		order_num INT NOT NULL,
+		title VARCHAR(255) NOT NULL,
+		description TEXT,
+		xp_reward INT NOT NULL DEFAULT 10,
+		language VARCHAR(10) NOT NULL
+	);`
 
+	_, err := s.DB.Exec(query)
+	return err
+}
+
+func (s *Storage) initTask() error {
+	const query = `CREATE TABLE IF NOT EXISTS tasks (
+		id SERIAL PRIMARY KEY,
+		lesson_id INT NOT NULL REFERENCES lessons(id) ON DELETE CASCADE,
+		order_num INT NOT NULL,
+		type VARCHAR(50) NOT NULL,
+		payload JSONB NOT NULL
+	);`
+	_, err := s.DB.Exec(query)
+	return err
+}
 
 func (s *Storage) initHTTPOnlyStorage() error {
 

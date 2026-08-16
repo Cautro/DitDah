@@ -10,6 +10,7 @@ import (
 
 	auth "ditdah/internal/features/auth"
 	user "ditdah/internal/features/user"
+	lesson "ditdah/internal/features/lesson"
 
 	"github.com/joho/godotenv"
 )
@@ -38,13 +39,16 @@ func main()  {
 	defer store.Close()
 
 	uRepo := user.New(store.DB)
+	lRepo := lesson.New(store.DB)
 
 	uUseCase := user.NewUserUseCase(uRepo)
 	aUseCase := auth.NewAuthUseCase(uRepo, cfg.JwtSecret)
+	lessonUseCase := lesson.NewLessonUseCase(lRepo, uRepo)
 
 	r := router.NewRouter(router.UseCases{
 		Auth:      aUseCase,
 		User:      uUseCase,
+		Lesson:    lessonUseCase,
 
 		JWTSecret: cfg.JwtSecret,
 		DB:        store.DB,

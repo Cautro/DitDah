@@ -10,6 +10,8 @@ type UserEntity struct {
     NeedXP       int        `json:"needXp"`
     Level        int        `json:"level"`
 
+    IsAdmin      bool       `json:"isAdmin"`
+
     LessonsDoneEn int `json:"lessonsDoneEn"`
     LessonsDoneRu int `json:"lessonsDoneRu"`
 

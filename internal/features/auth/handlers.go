@@ -88,7 +88,8 @@ func LogoutHandler(userUseCase *user.UserUseCase, authUseCase *AuthUseCase) gin.
 
 		if token, err := c.Cookie("refresh_token"); err == nil {
 			if err := authUseCase.users.DeleteRefreshToken(ctx, token); err != nil {
-				slog.Info("error", err)
+				// nothing to do, just log the error
+				slog.Error("Failed to delete refresh token", "error", err)
 			}
 		}
 

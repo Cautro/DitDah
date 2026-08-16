@@ -10,6 +10,7 @@ type UserRepository interface {
 	GetAllUsers(ctx context.Context) ([]*UserEntity, error)
 	GetFullUserById(ctx context.Context, userID int) (*UserEntity, error)
 	GetUserByLogin(ctx context.Context, login string) (*UserEntity, error)
+	DeleteUser(ctx context.Context, userId int) error
 
 	// refresh system
 	SaveRefreshToken(ctx context.Context, userID int, token string, expiresAt time.Time) error
