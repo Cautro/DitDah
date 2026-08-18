@@ -39,6 +39,7 @@ func (r *postgresRepo) GetAllUsers(ctx context.Context) ([]*UserEntity, error) {
 	const query = `SELECT
 			id,
 			username,
+			is_admin,
 			xp,
 			need_xp,
 			level,
@@ -68,6 +69,7 @@ func (r *postgresRepo) GetAllUsers(ctx context.Context) ([]*UserEntity, error) {
 		err := rows.Scan(
 			&u.Id,
 			&u.Username,
+			&u.IsAdmin,
 			&u.XP,
 			&u.NeedXP,
 			&u.Level,
@@ -230,6 +232,7 @@ func (r *postgresRepo) getUserByLogin(ctx context.Context, username string) (*Us
 	const query = `SELECT
 			id,
 			username,
+			is_admin,
 			password,
 			xp,
 			need_xp,
@@ -254,6 +257,7 @@ func (r *postgresRepo) getUserByLogin(ctx context.Context, username string) (*Us
 	err := r.db.QueryRowContext(ctx, query, username).Scan(
 		&u.Id,
 		&u.Username,
+		&u.IsAdmin,
 		&u.Password,
 		&u.XP,
 		&u.NeedXP,
@@ -286,6 +290,7 @@ func (r *postgresRepo) getUserById(ctx context.Context, id int) (*UserEntity, er
 	const query = `SELECT
 			id,
 			username,
+			is_admin,
 			xp,
 			need_xp,
 			level,
@@ -309,6 +314,7 @@ func (r *postgresRepo) getUserById(ctx context.Context, id int) (*UserEntity, er
 	err := r.db.QueryRowContext(ctx, query, id).Scan(
 		&u.Id,
 		&u.Username,
+		&u.IsAdmin,
 		&u.XP,
 		&u.NeedXP,
 		&u.Level,

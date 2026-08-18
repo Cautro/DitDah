@@ -44,7 +44,7 @@ func AddLessonHandler(lessonUseCase *LessonUseCase) gin.HandlerFunc {
 			return
 		}
 
-		userId := c.GetInt("id")
+		userId := c.GetInt("Id")
 		if err := lessonUseCase.AddLesson(lesson, userId); err != nil {
 			c.JSON(500, gin.H{"error": err.Error()})
 			return
@@ -62,7 +62,7 @@ func DeleteLessonHandler(lessonUseCase *LessonUseCase) gin.HandlerFunc {
 			return
 		}
 
-		userId := c.GetInt("id")
+		userId := c.GetInt("Id")
 		if err := lessonUseCase.DeleteLesson(lessonId, userId); err != nil {
 			if err.Error() == "User is not an admin" {
 				c.JSON(403, gin.H{"error": "forbidden"})

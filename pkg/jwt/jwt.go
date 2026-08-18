@@ -15,8 +15,8 @@ type TokenManager struct {
 }
 
 type Claims struct {
-	UserID   int `json:"id"`
-	Username string `json:"username"`
+	UserID   int `json:"Id"`
+	Username string `json:"Username"`
 	jwt.RegisteredClaims
 }
 
